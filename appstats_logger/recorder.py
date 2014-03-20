@@ -21,6 +21,8 @@ import logging
 import threading
 import time
 
+from google.appengine.api import runtime
+
 
 class Recorder(object):
     """In-memory state for the current request.
@@ -48,6 +50,8 @@ class Recorder(object):
         self._lock = threading.Lock()
 
         self.overhead = (time.time() - self.start_timestamp)
+
+        self.start_memory = runtime.memory_usage().current()
 
     def record_rpc_request(self, service, call, request, response, rpc):
         """Record the request of an RPC call.
@@ -135,6 +139,8 @@ class Recorder(object):
         return {
             'overhead': int(self.overhead * 1000),
             'exec_time': int((time.time() - self.start_timestamp) * 1000),
+            'memory_start': self.start_memory,
+            'memory_end': runtime.memory_usage().current(),
             'calls': self.traces
         }
 
