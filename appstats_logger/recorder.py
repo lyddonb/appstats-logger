@@ -136,11 +136,12 @@ class Recorder(object):
 
     def get_profile_data(self):
         """Return a dict with the profile results."""
+        end_memory = runtime.memory_usage().current()
         return {
             'overhead': int(self.overhead * 1000),
             'exec_time': int((time.time() - self.start_timestamp) * 1000),
-            'memory_start': self.start_memory,
-            'memory_end': runtime.memory_usage().current(),
+            'memory_delta': float(end_memory - self.start_memory),
+            'memory_end': end_memory,
             'calls': self.traces
         }
 
